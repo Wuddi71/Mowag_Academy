@@ -1,0 +1,65 @@
+﻿@page "/htmlcsstryyourself"
+@using MudBlazor
+
+<MudDialogContent Style="height: calc(70vh); display: flex; flex-direction: column;">
+    <!-- MudGrid ohne feste Höhe -->
+    <MudGrid Class="flex-grow-1">
+        <!-- Eingabebereich -->
+        <MudItem xs="12" sm="6">
+            <MudPaper Class="pa-2" Style="height: 95%;">
+                <MudTextField @bind-Value="UserCode" Label="Geben Sie hier Ihren HTML/CSS-Code ein" Lines="30" FullWidth="true" Style="height: 100%;" />
+            </MudPaper>
+        </MudItem>
+        <!-- Anzeigebereich -->
+        <MudItem xs="12" sm="6">
+            <MudPaper Class="pa-2" Style="height: 100%;">
+                <iframe sandbox="allow-scripts" style="width: 100%; height: 100%;" srcdoc="@DisplayCode"></iframe>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+    <!-- Buttons unterhalb des Grids -->
+    <MudStack Direction="Row" Spacing="1" Class="mt-2">
+        <MudButton OnClick="UpdateDisplayCode" Color="Color.Primary">Anzeigen</MudButton>
+        <MudButton OnClick="ResetCode" Color="Color.Secondary">Zurücksetzen</MudButton>
+        <MudButton OnClick="CloseDialog" Color="Color.Primary">Schließen</MudButton>
+    </MudStack>
+</MudDialogContent>
+@* 
+<MudDialogActions>
+    <MudButton OnClick="CloseDialog" Color="Color.Primary">Schließen</MudButton>
+</MudDialogActions> *@
+
+
+@code {
+    [CascadingParameter] MudDialogInstance Dialog { get; set; }
+
+    private string InitialCode = "<p>Willkommen! Geben Sie Ihren HTML/CSS-Code links ein.</p>";
+
+    private string UserCode { get; set; }
+    private string DisplayCode { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Initialisieren von UserCode und DisplayCode mit dem anfänglichen Code
+        UserCode = InitialCode;
+        DisplayCode = InitialCode;
+    }
+
+    private void UpdateDisplayCode()
+    {
+        // Aktualisieren von DisplayCode mit dem aktuellen UserCode
+        DisplayCode = UserCode;
+    }
+
+    private void ResetCode()
+    {
+        // Zurücksetzen von UserCode und DisplayCode auf den initialen Wert
+        UserCode = InitialCode;
+        DisplayCode = InitialCode;
+    }
+
+    private void CloseDialog()
+    {
+        Dialog.Close();
+    }
+}

@@ -1,0 +1,159 @@
+﻿@page "/dashboard"
+@using Mowag_Academy.Shared.DTOs
+@inject HttpClient Http
+@inject IDialogService DialogService  // Injection des DialogService
+
+<PageTitle>Dashboard</PageTitle>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudTable T="UserDto" Items="@filteredUsers" Striped="true" Hover="true" Dense="true" OnRowClick="OnRowClick" RowsPerPage="5">
+            <ToolBarContent>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LoadUsers">Aktualisieren</MudButton>
+                <MudSpacer />
+                <!-- Dropdown-Filter für das Jahr -->
+                <MudSelect @bind-Value="selectedYear" Label="Mögliches Startjahr filtern" T="int?" Margin="Margin.Dense" SelectedValuesChanged="LoadUsers" Style="width: 25%">
+                    <MudSelectItem T="int?" Value="null">Alle</MudSelectItem>
+                    @foreach (var year in uniqueYears)
+                    {
+                        <MudSelectItem T="int?" Value="year">@year</MudSelectItem>
+                    }
+                </MudSelect>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh><MudTableSortLabel T="UserDto" SortBy="@(u => u.Username)">Username</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="UserDto" SortBy="@(u => u.Firstname)">Vorname</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="UserDto" SortBy="@(u => u.Lastname)">Nachname</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="UserDto" SortBy="@(u => u.CourseDate)">Kursdatum</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="UserDto" SortBy="@(u => u.PossibleStartingYear)">Mögliches Startjahr</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Username</MudTd>
+                <MudTd>@context.Firstname</MudTd>
+                <MudTd>@context.Lastname</MudTd>
+                <MudTd>@context.CourseDate.ToString("dd.MM.yyyy")</MudTd>
+                <MudTd>@context.PossibleStartingYear</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No users found.</MudText>
+            </NoRecordsContent>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 5,10 }" />
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+    <MudGrid>
+        <!-- Erste Spalte: Donut Chart -->
+        <MudItem xs="4">
+            <!-- 1/3 des Platzes -->
+            <MudChart ChartType="ChartType.Donut" Width="300px" Height="300px" InputData="@data" InputLabels="@labels">
+                <CustomGraphics>
+                    <text class="donut-inner-text" x="47%" y="35%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Helvetica" font-size="2">Total</text>
+                    <text class="donut-inner-text" x="47%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Helvetica" font-size="5">@data.Sum().ToString()</text>
+                </CustomGraphics>
+            </MudChart>
+        </MudItem>
+
+        <!-- Zweite Spalte: Line Chart -->
+        <MudItem xs="4">
+            <!-- 1/3 des Platzes -->
+            <MudChart ChartType="ChartType.Line" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px" ChartOptions="@Options" />
+
+        </MudItem>
+
+        <!-- Dritte Spalte: Rating -->
+        <MudItem xs="4" class="d-flex justify-center align-center">
+            <MudRating ReadOnly="true" SelectedValue="8" MaxValue="10" Size="Size.Large" Fractional="true" />
+        </MudItem>
+    </MudGrid>
+
+
+</MudGrid>
+
+
+@code {
+    private List<UserDto> users = new List<UserDto>();
+    private List<UserDto> filteredUsers = new List<UserDto>();
+    private int? selectedYear;
+    private HashSet<int> uniqueYears = new HashSet<int>();  // Set für die einzigartigen Jahre
+
+
+
+    // Initial load of users when the component is initialized
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    // Method to load users from the backend API
+    private async Task LoadUsers()
+    {
+        try
+        {
+            // Fetching users from the API endpoint
+            var fetchedUsers = await Http.GetFromJsonAsync<List<UserDto>>("api/users");
+
+            if (fetchedUsers != null)
+            {
+                users = fetchedUsers;
+
+                // Hole uniqueYears für den Dropdown-Filter
+                uniqueYears = users.Select(u => u.PossibleStartingYear).Distinct().ToHashSet();
+
+                // Filterung anwenden
+                ApplyFilter();
+            }
+            else
+            {
+                // Falls die API keine Benutzer zurückgibt
+                await Console.Error.WriteLineAsync("No users returned from the API.");
+                // Hier kannst du auch eine Benachrichtigung an den Benutzer hinzufügen, z.B. einen leeren Zustand anzeigen.
+                users = new List<UserDto>();  // Initialisiere users als leere Liste, um sicherzustellen, dass die Anwendung weiterhin funktioniert
+            }
+        }
+        catch (Exception ex)
+        {
+            await Console.Error.WriteLineAsync($"Error loading users: {ex.Message}");
+
+        }
+    }
+
+    // Methode, die angewendet wird, wenn der Benutzer den Filter ändert
+    private void ApplyFilter()
+    {
+        if (selectedYear.HasValue)
+        {
+            filteredUsers = users.Where(u => u.PossibleStartingYear == selectedYear.Value).ToList();
+
+        }
+        else
+        {
+            filteredUsers = users;
+        }
+    }
+
+
+    private async Task OnRowClick(TableRowClickEventArgs<UserDto> e)
+    {
+        var user = e.Item;  // Der angeklickte User
+        var parameters = new DialogParameters { ["User"] = user };
+        var dialogOptions = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraLarge, FullWidth = true };
+
+        
+
+    }
+
+    private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+    public ChartOptions Options = new ChartOptions();
+
+    public List<ChartSeries> Series = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "Fossil", Data = new double[] { 90, 79, 72, 69, 62, 62, 55, 65, 70 } },
+        new ChartSeries() { Name = "Renewable", Data = new double[] { 10, 41, 35, 51, 49, 62, 69, 91, 148 } },
+    };
+    public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" };
+
+    public double[] data = { 25, 77, 28, 5 }; //Sample Data
+    public string[] labels = { "Oil", "Coal", "Gas", "Biomass" }; //Sampledata
+
+}

@@ -1,0 +1,6 @@
+@Mowag_Academy.Server_HostAddress = http://localhost:5111
+
+GET {{Mowag_Academy.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

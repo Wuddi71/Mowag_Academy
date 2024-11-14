@@ -1,0 +1,21 @@
+﻿@page "/grundstrukturhtml"
+@using MudBlazor
+
+
+<MudDialogContent>
+    <h3>Grundstruktur HTML</h3>
+    <p>This is the content of the Grundstruktur HTML page.</p>
+</MudDialogContent>
+
+<MudDialogActions>
+    <MudButton OnClick="CloseDialog" Color="Color.Primary">Close</MudButton>
+</MudDialogActions>
+
+@code {
+    [CascadingParameter] MudDialogInstance Dialog { get; set; }
+
+    private void CloseDialog()
+    {
+        Dialog.Close();
+    }
+}

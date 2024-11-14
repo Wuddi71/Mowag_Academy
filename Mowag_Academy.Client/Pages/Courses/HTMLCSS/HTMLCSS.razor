@@ -1,0 +1,105 @@
+﻿@page "/htmlcss"
+@using MudBlazor
+@inject IDialogService DialogService
+@inject IJSRuntime JS
+
+<MudText Typo="Typo.h3" Align="Align.Center" Class="mt-5px">HTML und CSS</MudText>
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12" sm="6" md="4" lg="2">
+<MudCard Style="background-color: antiquewhite">
+    <MudCardHeader>
+        <CardHeaderAvatar>
+            <MudAvatar>OS</MudAvatar>
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1">Oliver Schweiss</MudText>
+            <MudText Typo="Typo.body2">IT Lehrling (2022- 2026)</MudText>
+        </CardHeaderContent>
+        
+    </MudCardHeader>
+    <MudCardMedia Image="PicturesCoursoverview/HTMLCSS.png" Height="250"  />
+    <MudCardContent>
+        <MudText Typo="Typo.body2">HTML hatte ich im ersten Lehrjahr.</MudText>
+    </MudCardContent>
+    <MudCardActions>
+        <MudIconButton Icon="@Icons.Material.Filled.Favorite" Color="Color.Default" />    
+    </MudCardActions>
+</MudCard>
+    </MudItem>
+</MudGrid>
+
+<!-- Grid container to hold items at the bottom of the page -->
+<MudGrid  Class="mb-4" Style="position: fixed; bottom: 0; width: 100%;">
+    
+
+    <!-- First Item -->
+    <MudItem xs="12" sm="4" md="3">
+        <MudPaper Class="pa-4" Elevation="4" Style="text-align: center;"
+                  @onclick='() => OpenDialog<Grundstruktur>("Grundstruktur HTML")'>
+            <MudText Typo="Typo.h5">Grundstruktur HTML</MudText>
+        </MudPaper>
+    </MudItem>
+
+    <!-- Second Item -->
+    <MudItem xs="12" sm="4" md="3">
+        <MudPaper Class="pa-4" Elevation="4" Style="text-align: center;"
+                  @onclick='() => OpenDialog<ElementeUndTags>("Elemente und Tags")'>
+            <MudText Typo="Typo.h5">Elemente und Tags</MudText>
+        </MudPaper>
+    </MudItem>
+
+    <!-- Third Item -->
+    <MudItem xs="12" sm="4" md="3">
+        <MudPaper Class="pa-4" Elevation="4" Style="text-align: center;"
+                  @onclick='() => OpenDialog<ListenUndTabellen>("Listen und Tabellen")'>
+            <MudText Typo="Typo.h5">Listen und Tabellen</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="4" md="3">
+        <MudPaper Class="pa-4" Elevation="4" Style="text-align: center;"
+                  @onclick='() => OpenDialog<EinstiegCSS>("Einstieg CSS")'>
+            <MudText Typo="Typo.h5">Einstieg CSS</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="4" md="3">
+        <MudPaper Class="pa-4" Elevation="4" Style="text-align: center;"
+                  @onclick='() => OpenDialog<SelektorenUndKlassen>("Selektoren und Klassen")'>
+            <MudText Typo="Typo.h5">Selektoren und Klassen</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="4" md="3">
+        <MudPaper Class="pa-4" Elevation="4" Style="text-align: center;"
+                  @onclick='() => OpenDialog<StylingAttribute>("Styling Attributte")'>
+            <MudText Typo="Typo.h5">Styling Attribute</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="4" md="3">
+        <MudPaper Class="pa-4" Elevation="4" Style="text-align: center;"
+                  @onclick='() => OpenDialog<HTMLCSSTest>("HTML/CSS Test")'>
+            <MudText Typo="Typo.h5">Test</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="4" md="3">
+        <MudPaper Class="pa-4" Elevation="4" Style="text-align: center;"
+                  @onclick='() => OpenDialog<HTMLCSSTryYourself>("Try Yourself")'>
+            <MudText Typo="Typo.h5">Try Yourself</MudText>
+        </MudPaper>
+    </MudItem>
+
+</MudGrid>
+
+
+@code {
+    
+    private void OpenDialog<T>(string title) where T : ComponentBase
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.ExtraLarge,
+                FullWidth = true
+            };
+
+        DialogService.Show<T>(title, options);
+    }
+}

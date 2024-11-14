@@ -1,0 +1,39 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+
+<!-- MudBlazor Theme, Popover, Dialog und Snackbar Provider für die Anwendung -->
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<!-- Hauptlayout der Anwendung -->
+<MudLayout>
+    <MudAppBar Color="Color.Primary" Fixed="false">
+        <!-- Linker Bereich mit Home- und CourseOverview-Button -->
+        <MudIconButton Icon="@Icons.Material.Filled.Home" Style="color: white" @onclick="@(() => NavigateTo("/"))" />
+        <MudIconButton Icon="@Icons.Material.Filled.MenuBook" Style="color: white" @onclick="@(() => NavigateTo("/courseoverview"))" />
+
+        <!-- Spacer sorgt dafür, dass die Elemente rechts ausgerichtet werden -->
+        <MudSpacer />
+
+        <!-- Rechter Bereich mit QueryStat und LoginDisplay -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <MudIconButton Icon="@Icons.Material.Filled.QueryStats" Style="color: white" @onclick="@(() => NavigateTo("/dashboard"))" />
+            <LoginDisplay />
+        </div>
+    </MudAppBar>
+
+    <!-- Hauptinhalt der Seite -->
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    // Methode zum Navigieren zu den angegebenen URLs
+    private void NavigateTo(string url)
+    {
+        Navigation.NavigateTo(url);
+    }
+}
